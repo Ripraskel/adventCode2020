@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import { once } from 'events';
 import * as readline from 'readline';
+import {PFV} from './passportValidationTool';
 
 async function processLineByLine() {
     try {
@@ -10,8 +11,7 @@ async function processLineByLine() {
         });
 
         let passportBatch: string[] = [];
-        // passportBatch[0] = "Ge";
-        // console.log(passportBatch[0]);
+        
         let index: number = 0;
         rl.on('line', (line: string) => {
             if (line === "") {
@@ -27,12 +27,23 @@ async function processLineByLine() {
 
         await once(rl, 'close');
 
-        let validPassports: number = 0;
+        // Part 1
+        let validPassportsPart1: number = 0;
         passportBatch.forEach((passport: string) => {
             if (passportValidPart1(passport)) {
-                validPassports++;
+                validPassportsPart1++;
             }
         })
+        console.log(`Part1: There ${validPassportsPart1} valid passports`)
+
+        // Part 2
+        let validPassportsPart2: number = 0;
+        passportBatch.forEach((passport: string) => {
+            if (passportValidPart2(passport)) {
+                validPassportsPart2++;
+            }
+        })
+        console.log(`Part2: There ${validPassportsPart2} valid passports`)
 
     } catch (err) {
         console.log(err);
@@ -40,8 +51,43 @@ async function processLineByLine() {
 };
 
 // Part1
-function passportValidPart1 (passports: string): boolean {
-    let result: boolean = false;
+function passportValidPart1 (passport: string): boolean {
+    let result: boolean = true;
+
+    PFV.forEach((field) => {
+        if (field[0] === 'cid') {
+            // Tbd as optional
+        } else {
+            if (!passport.includes(field[0])) {
+                result = false;
+                return result;
+            }
+
+        }
+    });
+
+    return result;
+}
+
+// Part2
+function passportValidPart2 (passport: string): boolean {
+    let result: boolean = true;
+
+    try {
+        PFV.forEach((field) => {
+            if (field[0] === 'cid') {
+                // Tbd as optional
+            } else {
+                if (null == passport.match(field[1])) {
+                    result = false;
+                    throw `Passport failed on ${field[0]} \n Passport: \n ${passport} \n`
+                }
+            }
+        });
+    } catch (err) {
+        console.error(err);
+    }
+    
 
     return result;
 }

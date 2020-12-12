@@ -4,7 +4,8 @@
   "description": "",
   "main": "day4.js",
   "dependencies": {
-    "fs": "^0.0.1-security"
+    "fs": "^0.0.1-security",
+    "typescript": "^4.1.2"
   },
   "devDependencies": {
     "@types/node": "^14.14.12"
